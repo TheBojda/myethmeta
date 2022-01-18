@@ -1,0 +1,164 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/TheBojda/myethmeta",
+    "title": "Ethereum address metadata JSON schema",
+    "description": "Ethereum address metadata JSON schema",
+    "type": "object",
+    "properties": {
+        "displayName": {
+            "description": "The name of this Contact, suitable for display to end-users.",
+            "type": "string"
+        },
+        "name": {
+            "description": "The broken-out components and fully formatted version of the contact's real name.",
+            "type": "object",
+            "properties": {
+                "formatted": {
+                    "description": "The full name, including all middle names, titles, and suffixes as appropriate, formatted for display.",
+                    "type": "string"
+                },
+                "familyName": {
+                    "description": "The family name of this Contact, or \"Last Name\" in most Western languages.",
+                    "type": "string"
+                },
+                "givenName": {
+                    "description": "The given name of this Contact, or \"First Name\" in most Western languages.",
+                    "type": "string"
+                },
+                "middleName": {
+                    "description": "The middle name(s) of this Contact.",
+                    "type": "string"
+                },
+                "honorificPrefix": {
+                    "description": "The honorific prefix(es) of this Contact, or \"Title\" in most Western languages.",
+                    "type": "string"
+                },
+                "honorificSuffix": {
+                    "description": "The honorifix suffix(es) of this Contact, or \"Suffix\" in most Western languages.",
+                    "type": "string"
+                }
+            }
+        },
+        "nickname": {
+            "description": "The casual way to address this Contact in real life.",
+            "type": "string"
+        },
+        "birthday": {
+            "description": "The birthday of this contact.",
+            "type": "string"
+        },
+        "gender": {
+            "description": "The gender of this contact.",
+            "type": "string"
+        },
+        "preferredUsername": {
+            "description": "The preferred username of this contact on sites that ask for a username.",
+            "type": "string"
+        },
+        "thumbnailUrl": {
+            "description": "URI of the user's avatar.",
+            "type": "string"
+        },
+        "photos": {
+            "description": "List of photos of this contact.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "description": "URI of a photo of this contact.",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "Type of the photo.",
+                        "type": "string"
+                    },
+                    "primary": {
+                        "description": "A Boolean value indicating whether this instance of the Plural Field is the primary or preferred value of for this field.",
+                        "type": "boolean"
+                    }
+                }
+            }
+        },
+        "emails": {
+            "description": "List of e-mail addresses of this contact.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "description": "E-mail address of this contact.",
+                        "type": "string"
+                    },
+                    "primary": {
+                        "description": "A Boolean value indicating whether this instance of the Plural Field is the primary or preferred value of for this field.",
+                        "type": "boolean"
+                    }
+                }
+            }
+        },
+        "ims": {
+            "description": "Instant messaging addresses for this Contact.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "description": "Instant messaging address of this contact.",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "Type of IM service.",
+                        "type": "string"
+                    },
+                    "primary": {
+                        "description": "A Boolean value indicating whether this instance of the Plural Field is the primary or preferred value of for this field.",
+                        "type": "boolean"
+                    }
+                }
+            }
+        },
+        "accounts": {
+            "description": "Online accounts held by this Contact.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "domain": {
+                        "description": "The top-most authoritative domain for this account, e.g. \"twitter.com\".",
+                        "type": "string"
+                    },
+                    "username": {
+                        "description": "An alphanumeric user name, usually chosen by the user.",
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "urls": {
+            "description": "URLs of a web pages relating to this Contact.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "description": "URL of a webpage of this contact.",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "Type of the webpage.",
+                        "type": "string"
+                    },
+                    "primary": {
+                        "description": "A Boolean value indicating whether this instance of the Plural Field is the primary or preferred value of for this field.",
+                        "type": "boolean"
+                    }
+                }
+            }
+        },
+        "aboutMe": {
+            "description": "A short introduction of this contact.",
+            "type": "string"
+        }
+    }
+}
