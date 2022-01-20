@@ -1,0 +1,26 @@
+{
+  "name": "myethmeta",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
+  "types": "dist/types.d.ts",
+  "scripts": {
+    "build-schema": "json2ts ../../specification/myethmeta-schema.json -o ./src/myethmeta-schema.ts",
+    "build": "parcel build ./src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "json-schema-to-typescript": "^10.1.5",
+    "web3": "^1.7.0"
+  },
+  "devDependencies": {
+    "@parcel/packager-ts": "^2.2.1",
+    "@parcel/transformer-typescript-types": "^2.2.1",
+    "parcel": "^2.2.1",
+    "typescript": "^4.5.5"
+  }
+}
