@@ -1,6 +1,7 @@
 import MyEthMetaClient from "myethmeta";
 
 (async () => {
-    let x = new MyEthMetaClient()
-    console.log(await x.getMetaData("0x5e8ba2ae8d293e73248448ebe39840aba6bd2269"));
+    let client = new MyEthMetaClient()
+    let params = new URLSearchParams(location.search)
+    console.log(await client.getMetaData(params.get("address")));
 })();

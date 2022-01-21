@@ -17,7 +17,7 @@ export default class MyEthMetaClient {
   }
 
   private async callContract(address: string) {
-    const prefix = '0xd7f84684000000000000000000000000'; // firs 4 bytes of keccak('getMetaURI(address)')
+    const prefix = '0xd7f84684000000000000000000000000'; // firs 4 bytes of keccak('getMetaURI(address)') + 12 bytes for address zero padding
     const data = prefix + address.substring(2)
     const payload = {
       id: this.requestId,
@@ -41,8 +41,10 @@ export default class MyEthMetaClient {
     const json_result = await response.json();
     const result = json_result.result;
     const result_bytes = this.hexToBytes(result.substring(2)); // cut 0x
-    let result_string_bytes = result_bytes.slice(32 + 31, result_bytes.length); // cut offset and zeros
+    let result_string_bytes = result_bytes.slice(32 + 31, result_bytes.length); // cut offset (return value is always a tuple) and zeros
     const string_length = result_string_bytes.shift(); // get string legth
+    if (string_length == 0)
+      return null;
     const string_bytes = result_string_bytes.slice(0, string_length); // get string data
     return String.fromCharCode(...string_bytes); // convert to string
   }
@@ -55,6 +57,8 @@ export default class MyEthMetaClient {
 
   async getMetaData(address: string): Promise<EthereumAddressMetadataJSONSchema> {
     const uri = await this.callContract(address);
+    if (!uri)
+      return {}
     const response = await fetch(this.getGatewayURL(uri));
     return await response.json();
   }
