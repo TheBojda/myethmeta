@@ -1,0 +1,25 @@
+{
+  "name": "profile_page",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "parcel build index.html",
+    "start": "parcel index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@parcel/transformer-vue": "^2.2.1",
+    "parcel": "^2.2.1",
+    "parcel-config-vue2": "^0.1.3",
+    "parcel-transformer-vue2": "^0.1.7"
+  },
+  "dependencies": {
+    "bootstrap": "^5.1.3",
+    "bootstrap-icons": "^1.7.2",
+    "vue": "^2.6.14",
+    "vue-property-decorator": "^9.1.2"
+  }
+}
