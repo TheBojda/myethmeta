@@ -3,23 +3,28 @@
     <div class="row">
       <div class="col-md-4">
         <div class="card">
-          <div class="card-body">
+          <div class="card-body" v-if="meta">
             <div class="d-flex flex-column align-items-center text-center">
               <img
-                src="https://secure.gravatar.com/avatar/7f71469004f56b62e6753b94abc46469"
+                :src="thumbnailUrl"
                 alt="Profile thumbnail"
                 class="rounded-circle"
                 width="150"
               />
               <div class="mt-3">
-                <h4>Laszlo Fazekas</h4>
-                <p class="text-secondary mb-1">
-                  0x5e8ba2ae8d293e73248448ebe39840aba6bd2269
+                <h4>{{ meta.displayName }}</h4>
+                <p class="text-secondary mb-1" v-if="primaryEmail">
+                  <a :href="primaryEmail.url" class="link-secondary">{{
+                    primaryEmail.email
+                  }}</a>
                 </p>
-                <button class="btn btn-outline-dark">
+                <p class="text-secondary mb-1">
+                  {{ address }}
+                </p>
+                <button class="btn btn-outline-dark" @click="copyToClipboard">
                   <i class="bi bi-clipboard"></i>
                 </button>
-                <button class="btn btn-outline-dark">
+                <button class="btn btn-outline-dark" @click="showQRPanel">
                   <i class="bi bi-qr-code"></i>
                 </button>
               </div>
@@ -34,329 +39,212 @@
               <h5>Basic data</h5>
               <hr class="col-10" />
             </div>
-            <div class="row">
+            <div class="row" v-if="meta && meta.name">
               <div class="col-3"><h6>Full Name</h6></div>
-              <div class="col-9 text-secondary">Laszlo Fazekas</div>
+              <div class="col-9 text-secondary">{{ meta.name.formatted }}</div>
             </div>
-            <div class="row">
+            <div class="row" v-if="meta && meta.birthday">
               <div class="col-3"><h6>Birthday</h6></div>
-              <div class="col-9 text-secondary">1980-12-19</div>
+              <div class="col-9 text-secondary">{{ meta.birthday }}</div>
             </div>
-            <div class="row">
+            <div class="row" v-if="meta && meta.gender">
               <div class="col-3"><h6>Gender</h6></div>
-              <div class="col-9 text-secondary">male</div>
+              <div class="col-9 text-secondary">{{ meta.gender }}</div>
             </div>
             <div class="row mt-4">
               <h5>About me</h5>
               <hr class="col-10" />
             </div>
-			<div class="row">
-				<div class="col-12 text-secondary">Freelancer developer, ENVIENTA activist, blogger</div>
-			</div>
+            <div class="row" v-if="meta && meta.aboutMe">
+              <div class="col-12 text-secondary">
+                {{ meta.aboutMe }}
+              </div>
+            </div>
             <div class="row mt-4">
               <h5>IM Contacts</h5>
               <hr class="col-10" />
             </div>
-            <div class="row">
+            <div class="row" v-for="(im, idx) in ims" :key="'im_' + idx">
               <div class="col-3">
-                <h6><i class="bi bi-skype"></i> Skype</h6>
+                <h6>{{ im.name }}</h6>
               </div>
-              <div class="col-9 text-secondary">lfaz80</div>
+              <div class="col-9 text-secondary">
+                <a :href="im.url" class="link-secondary">{{ im.value }}</a>
+              </div>
             </div>
             <div class="row mt-4">
-              <h5>Social media</h5>
+              <h5>Accounts</h5>
               <hr class="col-10" />
             </div>
-            <div class="row">
+            <div
+              class="row"
+              v-for="(account, idx) in accounts"
+              :key="'acc_' + idx"
+            >
               <div class="col-3">
                 <h6>
                   <img
-                    src="https://s2.googleusercontent.com/s2/favicons?domain_url=https://twitter.com"
+                    :src="
+                      'https://www.google.com/s2/favicons?sz=18&domain_url=' +
+                      account.domain
+                    "
                   />
-                  Twitter
+                  {{ account.domain }}
                 </h6>
               </div>
-              <div class="col-9 text-secondary">TheBojda</div>
+              <div class="col-9 text-secondary">
+                <a :href="account.url" class="link-secondary" target="_blank">{{
+                  account.username
+                }}</a>
+              </div>
             </div>
-            <div class="row mt-4">
+            <div
+              class="row mt-4"
+              v-if="meta && meta.urls && meta.urls.length > 0"
+            >
               <h5>Web</h5>
               <hr class="col-10" />
             </div>
-            <div class="row">
-              <div class="col-12">
-                <h6>
-                  <img
-                    src="https://s2.googleusercontent.com/s2/favicons?domain_url=https://thebojda.medium.com"
-                    class="me-1"
-                  />
-                  <a href="#" class="link-secondary" style="text-decoration: none;">
-                    https://thebojda.medium.com
-                  </a>
-                </h6>
+            <div v-if="meta && meta.urls">
+              <div class="row" v-for="(webpage, idx) in meta.urls" :key="idx">
+                <div class="col-12">
+                  <h6>
+                    <img
+                      :src="
+                        'https://www.google.com/s2/favicons?sz=18&domain_url=' +
+                        webpage.value
+                      "
+                    />
+                    <a
+                      :href="webpage.value"
+                      class="link-secondary"
+                      target="_blank"
+                    >
+                      {{ webpage.value }}
+                    </a>
+                  </h6>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <!--div class="container" style="margin-top: 20px">
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <div class="d-flex flex-column align-items-center text-center">
-                <img
-                  src="https://secure.gravatar.com/avatar/7f71469004f56b62e6753b94abc46469"
-                  alt="Profile thumbnail"
-                  class="rounded-circle"
-                  width="150"
-                />
-                <div class="mt-3">
-                  <h4>Laszlo Fazekas</h4>
-                  <p class="text-secondary mb-1">
-                    0x5e8ba2ae8d293e73248448ebe39840aba6bd2269
-                  </p>
-                  <button class="btn btn-primary">Follow</button>
-                  <button class="btn btn-outline-primary">Message</button>
-                </div>
-              </div>
-            </div>
+    <div class="modal" tabindex="-1" ref="qr_popup">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div
+            class="modal-body d-flex flex-column align-items-center text-center"
+            v-if="qrcode_image"
+          >
+            <img :src="qrcode_image" alt="qrcode" />
           </div>
         </div>
-        <div class="col-md-8">
-          <div class="card mb-3">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-sm-3">
-                  <h6 class="mb-0">Full Name</h6>
-                </div>
-                <div class="col-sm-9 text-secondary">Kenneth Valdez</div>
-              </div>
-              <hr />
-              <div class="row">
-                <div class="col-sm-3">
-                  <h6 class="mb-0">Email</h6>
-                </div>
-                <div class="col-sm-9 text-secondary">fip@jukmuh.al</div>
-              </div>
-              <hr />
-              <div class="row">
-                <div class="col-sm-3">
-                  <h6 class="mb-0">Phone</h6>
-                </div>
-                <div class="col-sm-9 text-secondary">(239) 816-9029</div>
-              </div>
-              <hr />
-              <div class="row">
-                <div class="col-sm-3">
-                  <h6 class="mb-0">Mobile</h6>
-                </div>
-                <div class="col-sm-9 text-secondary">(320) 380-4539</div>
-              </div>
-              <hr />
-              <div class="row">
-                <div class="col-sm-3">
-                  <h6 class="mb-0">Address</h6>
-                </div>
-                <div class="col-sm-9 text-secondary">
-                  Bay Area, San Francisco, CA
-                </div>
-              </div>
-              <hr />
-              <div class="row">
-                <div class="col-sm-12">
-                  <a
-                    class="btn btn-info"
-                    target="__blank"
-                    href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills"
-                    >Edit</a
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card mt-3">
-            <ul class="list-group list-group-flush">
-              <li
-                class="
-                  list-group-item
-                  d-flex
-                  justify-content-between
-                  align-items-center
-                  flex-wrap
-                "
-              >
-                <h6 class="mb-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-globe mr-2 icon-inline"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path
-                      d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
-                    ></path></svg
-                  >Website
-                </h6>
-                <span class="text-secondary">https://bootdey.com</span>
-              </li>
-              <li
-                class="
-                  list-group-item
-                  d-flex
-                  justify-content-between
-                  align-items-center
-                  flex-wrap
-                "
-              >
-                <h6 class="mb-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-github mr-2 icon-inline"
-                  >
-                    <path
-                      d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
-                    ></path></svg
-                  >Github
-                </h6>
-                <span class="text-secondary">bootdey</span>
-              </li>
-              <li
-                class="
-                  list-group-item
-                  d-flex
-                  justify-content-between
-                  align-items-center
-                  flex-wrap
-                "
-              >
-                <h6 class="mb-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-twitter mr-2 icon-inline text-info"
-                  >
-                    <path
-                      d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"
-                    ></path></svg
-                  >Twitter
-                </h6>
-                <span class="text-secondary">@bootdey</span>
-              </li>
-              <li
-                class="
-                  list-group-item
-                  d-flex
-                  justify-content-between
-                  align-items-center
-                  flex-wrap
-                "
-              >
-                <h6 class="mb-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="
-                      feather feather-instagram
-                      mr-2
-                      icon-inline
-                      text-danger
-                    "
-                  >
-                    <rect
-                      x="2"
-                      y="2"
-                      width="20"
-                      height="20"
-                      rx="5"
-                      ry="5"
-                    ></rect>
-                    <path
-                      d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"
-                    ></path>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg
-                  >Instagram
-                </h6>
-                <span class="text-secondary">bootdey</span>
-              </li>
-              <li
-                class="
-                  list-group-item
-                  d-flex
-                  justify-content-between
-                  align-items-center
-                  flex-wrap
-                "
-              >
-                <h6 class="mb-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="
-                      feather feather-facebook
-                      mr-2
-                      icon-inline
-                      text-primary
-                    "
-                  >
-                    <path
-                      d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
-                    ></path></svg
-                  >Facebook
-                </h6>
-                <span class="text-secondary">bootdey</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+      </div>
     </div>
-  </div-->
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import MyEthMetaClient from "myethmeta";
+import { EthereumAddressMetadataJSONSchema } from "myethmeta";
+import QRCode from "qrcode";
+import { Modal } from "bootstrap";
+import copy from "copy-to-clipboard";
 
 @Component
-class App extends Vue {}
+class App extends Vue {
+  public address: string = null;
+  public meta: EthereumAddressMetadataJSONSchema = null;
+
+  public thumbnailUrl: string = null;
+  public primaryEmail: { email: string; url: string } = null;
+  public ims: { name: string; url: string; value: string }[] = [];
+  public accounts: { domain: string; username: string; url: string }[] = [];
+  public qrcode_image: string = null;
+
+  private metaClient: MyEthMetaClient = new MyEthMetaClient();
+
+  public async mounted() {
+    window.onhashchange = () => {
+      this.hashChanged();
+    };
+    this.hashChanged();
+  }
+
+  private async hashChanged() {
+    if (!window.location.hash) return;
+    let address = window.location.hash.substring(1);
+    if (address.length < 42) return;
+    if (!address.startsWith("0x")) return;
+
+    this.address = address;
+
+    this.qrcode_image = await QRCode.toDataURL(address, { width: 400 });
+
+    this.meta = await this.metaClient.getMetaData(address);
+
+    this.thumbnailUrl = this.metaClient.getGatewayURL(this.meta.thumbnailUrl);
+
+    if (this.meta.emails) {
+      let primaryEmail = this.meta.emails[0].value;
+      for (const mailData of this.meta.emails) {
+        if (mailData.primary) primaryEmail = mailData.value;
+      }
+      this.primaryEmail = {
+        email: primaryEmail,
+        url: "mailto:" + primaryEmail,
+      };
+    }
+
+    if (this.meta.ims) {
+      for (const im of this.meta.ims) {
+        let url = "#";
+        if (im.type == "skype") url = "skype:" + im.value;
+        if (im.type == "telegram") url = "https://telegram.me/" + im.value;
+
+        this.ims.push({
+          name: im.type.substring(0, 1).toUpperCase() + im.type.substring(1),
+          url: url,
+          value: im.value,
+        });
+      }
+    }
+
+    if (this.meta.accounts) {
+      for (const account of this.meta.accounts) {
+        let url = "#";
+        if (account.domain == "twitter.com")
+          url = "https://twitter.com/@" + account.username;
+        if (account.domain == "github.com")
+          url = "https://github.com/" + account.username;
+
+        this.accounts.push({
+          domain: account.domain,
+          username: account.username,
+          url: url,
+        });
+      }
+    }
+  }
+
+  public showQRPanel() {
+    new Modal(this.$refs.qr_popup).show();
+  }
+
+  public copyToClipboard() {
+    copy(this.address);
+  }
+}
 
 export default App;
 </script>
