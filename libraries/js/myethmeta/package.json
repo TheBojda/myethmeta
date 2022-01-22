@@ -1,6 +1,6 @@
 {
   "name": "myethmeta",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "source": "src/index.ts",
   "main": "dist/main.js",
@@ -10,9 +10,24 @@
     "build-schema": "json2ts ../../specification/myethmeta-schema.json -o ./src/myethmeta-schema.ts",
     "build": "parcel build ./src/index.ts"
   },
-  "keywords": [],
-  "author": "",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheBojda/myethmeta"
+  },
+  "keywords": [
+    "Ethereum",
+    "Metadata",
+    "gravatar"
+  ],
+  "author": "TheBojda",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheBojda/myethmeta/issues"
+  },
+  "homepage": "https://github.com/TheBojda/myethmeta#readme",
   "devDependencies": {
     "@parcel/packager-ts": "^2.2.1",
     "@parcel/transformer-typescript-types": "^2.2.1",

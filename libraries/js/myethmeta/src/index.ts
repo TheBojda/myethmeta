@@ -10,7 +10,7 @@ export default class MyEthMetaClient {
   constructor() { }
 
   private hexToBytes(hex: string): number[] {
-    let bytes = [];
+    let bytes: number[] = [];
     for (let c = 0; c < hex.length; c += 2)
       bytes.push(parseInt(hex.substring(c, c + 2), 16));
     return bytes;
@@ -49,13 +49,13 @@ export default class MyEthMetaClient {
     return String.fromCharCode(...string_bytes); // convert to string
   }
 
-  private getGatewayURL(uri: string) {
+  public getGatewayURL(uri: string) {
     if (uri.startsWith("ipfs://"))
-      return "https://ipfs.io/ipfs/" + uri.substring(7);
+      return "https://cloudflare-ipfs.com/ipfs/" + uri.substring(7);
     return uri;
   }
 
-  async getMetaData(address: string): Promise<EthereumAddressMetadataJSONSchema> {
+  public async getMetaData(address: string): Promise<EthereumAddressMetadataJSONSchema> {
     const uri = await this.callContract(address);
     if (!uri)
       return {}
