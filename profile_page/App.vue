@@ -1,6 +1,7 @@
 <template>
   <div class="container mt-3">
     <div class="row">
+      <!-- Short info card -->
       <div class="col-md-4">
         <div class="card">
           <div class="card-body" v-if="meta">
@@ -12,6 +13,9 @@
                 class="rounded-circle"
                 width="150"
               />
+              <p v-if="meta && !meta.thumbnailUrl && editMode">
+                Please choose a profile picture
+              </p>
               <input
                 v-if="editMode"
                 type="file"
@@ -26,10 +30,7 @@
                   v-if="editMode"
                   placeholder="Display name"
                 />
-                <p
-                  class="text-secondary mb-1"
-                  v-if="meta && meta.emails && !editMode"
-                >
+                <p class="text-secondary mb-1" v-if="meta && meta.emails">
                   <span
                     v-for="(email, idx) in meta.emails"
                     :key="'email_' + idx"
@@ -42,13 +43,6 @@
                     >
                   </span>
                 </p>
-                <input
-                  class="mt-1 mb-1"
-                  type="text"
-                  v-model="editModelPrimaryEmail"
-                  v-if="editMode"
-                  placeholder="Primary e-mail address"
-                />
                 <p class="text-secondary mb-1">
                   {{ address }}
                 </p>
@@ -82,40 +76,45 @@
           </button>
         </div>
       </div>
+
+      <!-- Detailed info card -->
       <div class="col-md-8">
         <div class="card">
           <div class="card-body">
+            <!-- Basic data -->
             <div class="row">
               <h5>Basic data</h5>
               <hr class="col-10" />
             </div>
-            <div class="row" v-if="meta && meta.name">
-              <div class="col-3"><h6>Full Name</h6></div>
-              <div class="col-9 text-secondary" v-if="!editMode">
+            <div class="row" v-if="meta">
+              <div class="col-3">
+                <h6>Full Name</h6>
+              </div>
+              <div class="col-9 text-secondary" v-if="!editMode && meta.name">
                 {{ meta.name.formatted }}
               </div>
-              <div class="col-9 text-secondary">
+              <div class="col-9 text-secondary" v-if="editMode">
                 <input
                   type="text"
-                  v-model="meta.name.formatted"
-                  v-if="editMode"
+                  placeholder="First Name"
+                  v-model="givenName"
+                />
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  v-model="familyName"
                 />
               </div>
-            </div>
-            <div class="row" v-if="meta && meta.birthday">
-              <div class="col-3"><h6>Birthday</h6></div>
-              <div class="col-9 text-secondary">{{ meta.birthday }}</div>
-            </div>
-            <div class="row" v-if="meta && meta.gender">
-              <div class="col-3"><h6>Gender</h6></div>
-              <div class="col-9 text-secondary">{{ meta.gender }}</div>
             </div>
             <div class="row mt-4">
               <h5>About me</h5>
               <hr class="col-10" />
             </div>
-            <div class="row" v-if="meta && meta.aboutMe">
-              <div class="col-12 text-secondary" v-if="!editMode">
+            <div class="row" v-if="meta">
+              <div
+                class="col-12 text-secondary"
+                v-if="!editMode && meta.aboutMe"
+              >
                 {{ meta.aboutMe }}
               </div>
               <div class="col-12 text-secondary" v-if="editMode">
@@ -126,6 +125,54 @@
                 ></textarea>
               </div>
             </div>
+            <!-- E-mail addresses -->
+            <div class="row mt-4">
+              <h5>E-mail addresses</h5>
+              <hr class="col-10" />
+            </div>
+            <div
+              class="row mt-1"
+              v-for="(email, idx) in meta.emails"
+              :key="'email_' + idx"
+            >
+              <div class="col-12">
+                <button
+                  class="btn btn-danger btn-sm me-1"
+                  v-if="editMode"
+                  @click="deleteEmail(idx)"
+                >
+                  x
+                </button>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="primaryEmail"
+                  :value="idx"
+                  :checked="email.primary"
+                  @input="setPrimaryEmail(idx)"
+                />
+                <a
+                  :href="'mailto:' + email.value"
+                  class="link-secondary"
+                  target="_blank"
+                >
+                  {{ email.value }}
+                </a>
+              </div>
+            </div>
+            <div class="row mt-1" v-if="editMode">
+              <div class="col-12">
+                <button class="btn btn-primary btn-sm me-1" @click="addEmail">
+                  +</button
+                ><input
+                  type="text"
+                  placeholder="E-mail address"
+                  class="w-75"
+                  v-model="editModelEmail"
+                />
+              </div>
+            </div>
+            <!-- IM contacts -->
             <div class="row mt-4">
               <h5>IM Contacts</h5>
               <hr class="col-10" />
@@ -170,6 +217,7 @@
                 />
               </div>
             </div>
+            <!-- Accounts -->
             <div class="row mt-4">
               <h5>Accounts</h5>
               <hr class="col-10" />
@@ -227,10 +275,8 @@
                 />
               </div>
             </div>
-            <div
-              class="row mt-4"
-              v-if="meta && meta.urls && meta.urls.length > 0"
-            >
+            <!-- Webpages -->
+            <div class="row mt-4">
               <h5>Web</h5>
               <hr class="col-10" />
             </div>
@@ -280,6 +326,7 @@
       </div>
     </div>
 
+    <!-- QR popup -->
     <div class="modal" tabindex="-1" ref="qr_popup">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -301,6 +348,7 @@
       </div>
     </div>
 
+    <!-- JSON popup -->
     <div class="modal" tabindex="-1" ref="json_popup">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -314,7 +362,7 @@
           </div>
           <div
             class="modal-body d-flex flex-column align-items-center"
-            style="max-height: 500px;"
+            style="max-height: 500px"
           >
             <pre class="w-100" v-html="generatedJSON"></pre>
           </div>
@@ -341,7 +389,6 @@ class App extends Vue {
   public qrcodeImage: string = null;
   public editMode: boolean = false;
 
-  public editModelPrimaryEmail: string = null;
   public editModelIM: { type: string; username: string } = {
     type: "",
     username: "",
@@ -351,6 +398,7 @@ class App extends Vue {
     username: "",
   };
   public editModelWebpage: string = "";
+  public editModelEmail: string = "";
 
   public generatedJSON: string = "";
 
@@ -383,13 +431,42 @@ class App extends Vue {
     this.qrcodeImage = await QRCode.toDataURL(address, { width: 400 });
 
     this.meta = await this.metaClient.getMetaData(address);
+  }
 
-    if (this.meta.emails) {
-      this.editModelPrimaryEmail = this.meta.emails[0].value;
-      for (const mailData of this.meta.emails) {
-        if (mailData.primary) this.editModelPrimaryEmail = mailData.value;
-      }
-    }
+  get familyName(): string {
+    if (!this.meta || !this.meta.name || !this.meta.name.familyName) return "";
+    return this.meta.name.familyName;
+  }
+
+  set familyName(value: string) {
+    if (!this.meta) return;
+    if (!this.meta.name)
+      this.$set(this.meta, "name", {
+        familyName: "",
+        givenName: "",
+        formatted: "",
+      });
+    this.meta.name.familyName = value;
+    this.meta.name.formatted =
+      this.meta.name.givenName + " " + this.meta.name.familyName;
+  }
+
+  get givenName(): string {
+    if (!this.meta || !this.meta.name || !this.meta.name.givenName) return "";
+    return this.meta.name.givenName;
+  }
+
+  set givenName(value: string) {
+    if (!this.meta) return;
+    if (!this.meta.name)
+      this.$set(this.meta, "name", {
+        familyName: "",
+        givenName: "",
+        formatted: "",
+      });
+    this.meta.name.givenName = value;
+    this.meta.name.formatted =
+      this.meta.name.givenName + " " + this.meta.name.familyName;
   }
 
   public getIMUrl(type: string, value: string) {
@@ -419,6 +496,8 @@ class App extends Vue {
   }
 
   public addIM() {
+    if (!this.meta) return;
+    if (!this.meta.ims) this.$set(this.meta, "ims", []);
     this.meta.ims.push({
       type: this.editModelIM.type,
       value: this.editModelIM.username,
@@ -434,6 +513,8 @@ class App extends Vue {
   }
 
   public addAccount() {
+    if (!this.meta) return;
+    if (!this.meta.accounts) this.$set(this.meta, "accounts", []);
     this.meta.accounts.push({
       domain: this.editModelAccount.domain,
       username: this.editModelAccount.username,
@@ -449,8 +530,26 @@ class App extends Vue {
   }
 
   public addWebpage() {
+    if (!this.meta) return;
+    if (!this.meta.urls) this.$set(this.meta, "urls", []);
     this.meta.urls.push({ value: this.editModelWebpage });
     this.editModelWebpage = "";
+  }
+
+  public deleteEmail(idx: number) {
+    this.meta.emails.splice(idx, 1);
+  }
+
+  public addEmail() {
+    if (!this.meta) return;
+    if (!this.meta.emails) this.$set(this.meta, "emails", []);
+    this.meta.emails.push({ value: this.editModelEmail, primary: false });
+    this.editModelEmail = "";
+  }
+
+  public setPrimaryEmail(idx: number) {
+    for (let email of this.meta.emails) email.primary = false;
+    this.meta.emails[idx].primary = true;
   }
 
   public copyToClipboard() {
@@ -472,13 +571,13 @@ class App extends Vue {
   public thumbnailChanged() {
     let reader = new FileReader();
     reader.onload = (e) => {
-      this.meta.thumbnailUrl = e.target.result as string;
+      this.$set(this.meta, "thumbnailUrl", e.target.result);
     };
     reader.readAsDataURL((this.$refs.thumbnailFileInput as any).files[0]);
   }
 
   public generateJSON() {
-    // syntax highlihter from https://stackoverflow.com/questions/4810841/pretty-print-json-using-javascript
+    // JSON syntax highlihter from https://stackoverflow.com/questions/4810841/pretty-print-json-using-javascript
     const syntaxHighlight = (json) => {
       json = json
         .replace(/&/g, "&amp;")
@@ -504,7 +603,9 @@ class App extends Vue {
       );
     };
 
-    this.generatedJSON = syntaxHighlight(JSON.stringify(this.meta, undefined, 2));
+    this.generatedJSON = syntaxHighlight(
+      JSON.stringify(this.meta, undefined, 2)
+    );
     new Modal(this.$refs.json_popup).show();
   }
 }
