@@ -64,8 +64,12 @@
           >
             Create/Edit your own metadata
           </button>
-          <button class="btn btn-lg btn-outline-primary w-100" v-if="editMode">
-            Save to IPFS and Polygon blockchain
+          <button
+            class="btn btn-lg btn-outline-primary w-100"
+            v-if="editMode"
+            @click="showUploadModal"
+          >
+            Publish metadata on IPFS and blockchain
           </button>
           <button
             class="btn btn-lg btn-outline-dark mt-3 w-100"
@@ -331,6 +335,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
+            <h5 class="modal-title">QR code for the Ethereum address</h5>
             <button
               type="button"
               class="btn-close"
@@ -353,6 +358,7 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
+            <h5 class="modal-title">Generated JSON metadata</h5>
             <button
               type="button"
               class="btn-close"
@@ -369,6 +375,61 @@
         </div>
       </div>
     </div>
+
+    <!-- Uplaod to IPFS and set on Polygon popup -->
+    <div class="modal" tabindex="-1" ref="upload_popup">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Publish metadata on IPFS and blockchain</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <small
+              >We are using
+              <a href="https://www.pinata.cloud/" target="_blank">Pinata</a> for
+              uploading your metadata to IPFS. Please
+              <a href="https://app.pinata.cloud/keys" target="_blank"
+                >generate a JWT key on Pinata</a
+              >
+              (select Pinning/pinJSONToIPFS), and copy it to this textarea.
+              <strong
+                >This page has no backend so we won't (and cannot) store your
+                Pinata key.</strong
+              >
+              Your metadata is owned by <strong>YOU</strong> on
+              <strong>YOUR</strong> Pinata account.</small
+            >
+            <textarea
+              class="w-100"
+              placeholder="Pinata JWT key"
+              v-model="pinataKey"
+            ></textarea>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="publishMetadata"
+            >
+              Publish
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -380,6 +441,11 @@ import QRCode from "qrcode";
 import { Modal } from "bootstrap";
 import copy from "copy-to-clipboard";
 import detectEthereumProvider from "@metamask/detect-provider";
+import Web3 from "web3";
+import { AbiItem } from "web3-utils";
+import myethmeta_abi from "./myethmeta_abi.json";
+
+const CONTRACT_ADDRESS = "0x63Ba8dfAEBa09a63c1bCB47a46229f14707Af995";
 
 @Component
 class App extends Vue {
@@ -401,6 +467,8 @@ class App extends Vue {
   public editModelEmail: string = "";
 
   public generatedJSON: string = "";
+
+  public pinataKey: string = "";
 
   private metaClient: MyEthMetaClient = new MyEthMetaClient();
   private ethereum: any;
@@ -607,6 +675,50 @@ class App extends Vue {
       JSON.stringify(this.meta, undefined, 2)
     );
     new Modal(this.$refs.json_popup).show();
+  }
+
+  public showUploadModal() {
+    new Modal(this.$refs.upload_popup).show();
+  }
+
+  public async publishMetadata() {
+    const response = await fetch(
+      "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.pinataKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(this.meta),
+      }
+    );
+    const result = await response.json();
+    console.log(result);
+
+    if (!result.IpfsHash) {
+      alert("Cannot publish data to IPFS! Please check your JWT key!");
+      return;
+    }
+
+    if (!this.ethereum) {
+      alert("Please install MetaMask, or use a Web3 browser!");
+      return;
+    }
+
+    const accounts = await this.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const account = accounts[0];
+    const web3 = new Web3(this.ethereum);
+    const contract = new web3.eth.Contract(
+      myethmeta_abi as AbiItem[],
+      CONTRACT_ADDRESS
+    );
+    const contract_call_result = await contract.methods
+      .setMetaURI("ipfs://" + result.IpfsHash)
+      .send({ from: account });
+    console.log(contract_call_result);
   }
 }
 
