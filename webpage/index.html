@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>MyEthMeta - Decentralized metadata for your Ethereum account (something like Gravatar for Ethereum)</title>
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .github-fork-ribbon:before {
+            background-color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <main>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-6 d-flex flex-column align-items-center text-center">
+                    <h1>Decentralized metadata for your Ethereum account</h1>
+                    <p>Something like Gravatar for Ethereum</p>
+                    <img src="profile_page.png" class="rounded w-100" />
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8 d-flex flex-column align-items-center text-center">
+                    <h2><strong>WHAT</strong> is MyEthMeta?</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    MyEthMeta is a decentralized metadata service for Ethereum accounts.
+                    It is something like Gravatar, but here the metadata and your profile picture is assigned to your Ethereum address.
+                    We have no any backend servers, <strong>you fully own your own data</strong>.
+                </div>
+            </div>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-8 d-flex flex-column align-items-center text-center">
+                    <h2><strong>HOW</strong> does it work?</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    MyEthMeta stores the Ethereum address metadata mappings in a <a href="https://polygonscan.com/address/0x63Ba8dfAEBa09a63c1bCB47a46229f14707Af995#code" target="_balnk">smart contract</a> on the Polygon blockchain.
+                    You can freely choose any URL for your metadata.
+                    It can be any decentralized storage like IPFS or Swarm, or any centralized storage.
+                    The metadata itself is a simple, extensible JSON file that is based on <a href="https://en.wikipedia.org/wiki/Portable_Contacts" target="_blank">Portable Contacts</a> (you can find the specification <a
+                        href="https://github.com/TheBojda/myethmeta/tree/main/specification">here</a>).
+                </div>
+            </div>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-8 d-flex flex-column align-items-center text-center">
+                    <h2><strong>WHY</strong> use it?</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    Gravatar profile pictures are used by many services like GitHub, Discuss, and WordPress.
+                    MyEthMeta is the Gravatar of the web3 world and much more, a full metadata service for your Ethereum accout.
+                    Let's look at some advantages of MyEthMeta:
+
+                    <ul class="mt-3">
+                        <li>Your profile is <strong>assigned to your Ethereum address instead of your e-mail</strong>.</li>
+                        <li>MyEthMeta is <strong>completely decentralized</strong>. The metadata mappings are stored by a smart contract on the Polygon chain that is not owned by anybody.</li>
+                        <li>The metadata <strong>can be stored on any URL</strong>. It can be a decentralized storage like IPFS or Swarm, or any centralized storage.</li>
+                        <li>Your metadata is <strong>fully owned by you</strong>. We don't have backend servers or any backend infrastructure, everything is decentralized.</li>
+                        <li>The smart contract is deployed on the Polygon chain, because of the <strong>low gas fees</strong>. (A metadata update is about 2 cents.)</li>
+                        <li>The metadata is storead as an <strong>extensible JSON format</strong>. It is based on Portable Contacts (like Gravatar), but you can freely add custom fields to it.</li>
+                        <li>MyEthMeta is completely <strong>Open Source</strong>. The libraries, the smart contract, the profile page, etc. are licensed under the MIT licence. If I would stop maintain it, or if you don't agree with my develpoment
+                            decisions, you can freely fork it.</li>
+                        <li>We have a simple <strong><a href="#">programming library</a></strong> for Javascript.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-8 d-flex flex-column align-items-center text-center">
+                    <button class="btn btn-primary btn-lg">Let's create your own profile</button>
+                </div>
+            </div>
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-8 d-flex flex-column align-items-center text-center">
+                    <h2>About me</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="row justify-content-center">
+                        <div class="col-md-3 d-flex flex-column align-items-center text-center">
+                            <img class="rounded-circle w-75" src="profile.jpg">
+                        </div>
+                        <div class="col-md-6">
+                            I'm Laszlo Fazekas. CTO of Pressenger Ltd. and currently the maintainer of MyEthMeta.
+                            I own the methmeta.org domain, but the MyEthMeta service is not owned by anybody because it's fully decentralized.
+                            For more info, please check my <a href="#">MyEthMeta profile</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+            <div class="row justify-content-center">
+                <div class="col-md-8 d-flex flex-column align-items-center text-center">
+                    ©
+                    <script>document.write(new Date().getFullYear())</script> Laszlo Fazekas
+                </div>
+            </div>
+        </footer>
+        <a class="github-fork-ribbon" href="https://github.com/TheBojda/myethmeta/tree/main/webpage" data-ribbon="Fork me on GitHub" title="Fork me on GitHub" target="_blank">Fork me on GitHub</a>
+    </div>
+    <script src="index.js" type="module"></script>
+</body>
+
+</html>
