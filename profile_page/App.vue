@@ -154,6 +154,7 @@
                   :value="idx"
                   :checked="email.primary"
                   @input="setPrimaryEmail(idx)"
+                  v-if="editMode"
                 />
                 <a
                   :href="'mailto:' + email.value"
@@ -471,14 +472,12 @@ class App extends Vue {
   public pinataKey: string = "";
 
   private metaClient: MyEthMetaClient = new MyEthMetaClient();
-  private ethereum: any;
 
   public async mounted() {
     window.onhashchange = () => {
       this.hashChanged();
     };
     this.hashChanged();
-    this.ethereum = await detectEthereumProvider();
   }
 
   private async hashChanged() {
@@ -490,6 +489,11 @@ class App extends Vue {
     if (address.endsWith("/edit")) {
       this.editMode = true;
       address = address.substring(0, address.length - 5);
+      const account = await this.getEthereumAccount();
+      if (address != account) {
+        window.location.hash = account;
+        return;
+      }
     } else {
       this.editMode = false;
     }
@@ -624,16 +628,23 @@ class App extends Vue {
     copy(this.address);
   }
 
-  public async jumpToEditMetadata() {
-    if (this.ethereum) {
-      const accounts = await this.ethereum.request({
+  private async getEthereumAccount(): Promise<string> {
+    const ethereum: any = await detectEthereumProvider();
+    if (ethereum) {
+      const accounts = await ethereum.request({
         method: "eth_requestAccounts",
       });
       const account = accounts[0];
-      window.location.hash = account + "/edit";
+      return account;
     } else {
       alert("Please install MetaMask or use a web3 browser!");
     }
+    return "";
+  }
+
+  public async jumpToEditMetadata() {
+    const account = await this.getEthereumAccount();
+    window.location.hash = account + "/edit";
   }
 
   public thumbnailChanged() {
@@ -682,43 +693,49 @@ class App extends Vue {
   }
 
   public async publishMetadata() {
-    const response = await fetch(
-      "https://api.pinata.cloud/pinning/pinJSONToIPFS",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.pinataKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(this.meta),
-      }
-    );
-    const result = await response.json();
-    console.log(result);
+    let result = null;
+    try {
+      const response = await fetch(
+        "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.pinataKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(this.meta),
+        }
+      );
+      result = await response.json();
+    } catch (e) {}
 
-    if (!result.IpfsHash) {
+    if (!result || !result.IpfsHash) {
       alert("Cannot publish data to IPFS! Please check your JWT key!");
       return;
     }
 
-    if (!this.ethereum) {
+    const ethereum: any = await detectEthereumProvider();
+    if (!ethereum) {
       alert("Please install MetaMask, or use a Web3 browser!");
       return;
     }
 
-    const accounts = await this.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    const account = accounts[0];
-    const web3 = new Web3(this.ethereum);
-    const contract = new web3.eth.Contract(
-      myethmeta_abi as AbiItem[],
-      CONTRACT_ADDRESS
-    );
-    const contract_call_result = await contract.methods
-      .setMetaURI("ipfs://" + result.IpfsHash)
-      .send({ from: account });
-    console.log(contract_call_result);
+    try {
+      const account = await this.getEthereumAccount();
+      const web3 = new Web3(ethereum);
+      const contract = new web3.eth.Contract(
+        myethmeta_abi as AbiItem[],
+        CONTRACT_ADDRESS
+      );
+      const contract_call_result = await contract.methods
+        .setMetaURI("ipfs://" + result.IpfsHash)
+        .send({ from: account });
+    } catch (e) {
+      alert("Cannot publish metadata on blockchain!");
+      return;
+    }
+
+    new Modal(this.$refs.upload_popup).hide();
   }
 }
 
