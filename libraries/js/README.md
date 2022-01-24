@@ -9,7 +9,7 @@ Install this package by `npm i myethmeta`
 
 ## Usage
 
-```
+```javascript
 const client = new MyEthMetaClient()
 const metadata = await client.getMetaData(eth_address)
 
