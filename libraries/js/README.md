@@ -1,6 +1,7 @@
 # JavaScript library for MyEthMeta
 
-Simple, zero dependency library for accessing metadata.
+Simple, zero dependency library for accessing metadata that is attached to your Ethereum address. 
+For more info, visit https://myethmeta.org/
 
 ## Installation
 
