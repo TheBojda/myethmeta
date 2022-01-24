@@ -12,7 +12,7 @@ document.getElementById('createProfileButton')?.addEventListener('click', async 
             method: "eth_requestAccounts",
         });
         const account = accounts[0];
-        window.open(`https://profile.myethmeta.org/#${account}/edit`, '_blank')?.focus();
+        window.location.href = `https://profile.myethmeta.org/#${account}/edit`;
     } else {
         alert("Please install MetaMask or use a web3 browser!");
     }
