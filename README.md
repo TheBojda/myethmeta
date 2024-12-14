@@ -1,6 +1,10 @@
 # MyEthMeta - Decentralized metadata for your Ethereum account
 
-MyEthMeta is a decentralized metadata service for Ethereum accounts. It is something like Gravatar, but here the metadata and your profile picture is assigned to your Ethereum address. We have no any backend servers, **you fully own your own data**.
+MyEthMeta is a decentralized metadata service for Ethereum accounts. It is something like Gravatar, but here the metadata and your profile picture are assigned to your Ethereum address. We have no backend servers, **you fully own your own data**.
+
+MyETHMeta is **MOVED TO** https://myethmeta.github.io/ and the https://github.com/MyETHMeta organization. **This repo is deprecated!**
+
+---
 
 For more info, visit https://myethmeta.org/
 
